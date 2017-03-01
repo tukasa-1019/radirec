@@ -27,22 +27,21 @@ class Job
 
 class JobManager
 {
-  const FILE_PATH    = 'crontab';
+  const JOB_FILE_PATH = 'crontab';
   const CRONTAB_PATH = '/usr/bin/crontab';
 
   const CRON_FORMAT_PATTEN = '|^(#?)([0-9\*\/\*]+) ([0-9\*\/\*]+) \* \* ([0-9,\-]+) (.+) # ID=([0-9]+)$|';
   const COMM_FORMAT_PATTEN = '|^(.+) "(.+)" ([0-9]+) "(.+)" "(.*)" (.*)$|';
   const ID_FORMAT_PATTERN  = '|^(## NextID=)([0-9]+)$|';
 
-  const MARGIN = 15;
-  const AANDG  = 'aandg.sh';
-  const RADIKO = 'radiko.sh';
+  const MARGIN = 20;
+  const SCRIPT = 'rtmpdump.sh';
   const OUTPUT = '1>/dev/null';
 
   const CHANNELS = [
     // A&G
-    "AGQR"           => "超！A&G",
-    "AGQRA"          => "超！A&G (音声)",
+    "AGQR"           => "超！A&G+",
+    "AGQRA"          => "超！A&G+ (音声)",
     // Radiko
     "TBS"            => "TBSラジオ",
     "QRR"            => "文化放送",
@@ -123,7 +122,7 @@ class JobManager
   }
 
   public function update($job, $id = -1) {
-    if ($fp = fopen(self::FILE_PATH, 'r+')) {
+    if ($fp = fopen(self::JOB_FILE_PATH, 'r+')) {
       // buffer
       $lines = '';
 
@@ -152,7 +151,8 @@ class JobManager
             $nid = (int) $matches[2];
             $line = sprintf("%s%d\n", $matches[1], $nid + 1);
           }
-          $lines .= $line;#sprintf("%s", $line);
+          $lines .= $line;
+          #sprintf("%s", $line);
         }
         $job->id = $nid;
         // append line
@@ -196,21 +196,9 @@ class JobManager
       $week = substr($week, 0, -1);
     }
 
-    $channel;
-    $script = sprintf('%s/', dirname(__FILE__));
-    if ($job->channel == 'AGQR') {
-      $channel = 'mp4';
-      $script .= self::AANDG;
-    } else if ($job->channel == 'AGQRA') {
-      $channel = 'm4a';
-      $script .= self::AANDG;
-    } else {
-      $channel = $job->channel;
-      $script .= self::RADIKO;
-    }
-
+    $script = sprintf('%s/%s', dirname(__FILE__), self::SCRIPT);
     $comm = sprintf('%s "%s" %d "%s" "%s" %s # ID=%d',
-      $script, $job->title, $job->rtime, $job->fname, $channel, self::OUTPUT, $job->id);
+      $script, $job->channel, $job->title, $job->rtime, $job->fname, self::OUTPUT, $job->id);
 
     return sprintf("%s%d %d * * %s %s\n",
       $job->enable ? '' : '#', $minute, $hour, $week, $comm);
@@ -222,7 +210,7 @@ class JobManager
     }
     $this->jlist = array();
 
-    $lines = file(self::FILE_PATH);
+    $lines = file(self::JOB_FILE_PATH);
     foreach ($lines as $line) {
       if (preg_match(self::CRON_FORMAT_PATTEN, $line, $matches)) {
         $padding = (int) (self::MARGIN / 60) + (self::MARGIN % 60 != 0 ? 1 : 0);
@@ -241,15 +229,10 @@ class JobManager
 
         if (preg_match(self::COMM_FORMAT_PATTEN, $matches[5], $matches)) {
           /* $script  = $matches[1]; */
-          $title   = $matches[2];
-          $rtime   = $matches[3];
-          $fname   = $matches[4];
-          $channel = $matches[5];
-          if ($channel == 'mp4') {
-            $channel = 'AGQR';
-          } else if ($channel == 'm4a') {
-            $channel = 'AGQRA';
-          }
+          $channel = $matches[2];
+          $title   = $matches[3];
+          $rtime   = $matches[4];
+          $fname   = $matches[5];
           /* $output = $matches[6]; */
 
           // Append
@@ -260,7 +243,7 @@ class JobManager
   }
 
   private function updateCrontab() {
-    exec(sprintf('%s < %s', self::CRONTAB_PATH, self::FILE_PATH), $out, $ret);
+    exec(sprintf('%s < %s', self::CRONTAB_PATH, self::JOB_FILE_PATH), $out, $ret);
   }
 }
 
