@@ -31,7 +31,7 @@ class JobManager
   const CRONTAB_PATH = '/usr/bin/crontab';
 
   const CRON_FORMAT_PATTEN = '|^(#?)([0-9\*\/\*]+) ([0-9\*\/\*]+) \* \* ([0-9,\-]+) (.+) # ID=([0-9]+)$|';
-  const COMM_FORMAT_PATTEN = '|^(.+) "(.+)" ([0-9]+) "(.+)" "(.*)" (.*)$|';
+  const COMM_FORMAT_PATTEN = '|^(.+) "(.+)" "(.+)" ([0-9]+) "(.+)" (.*)$|';
   const ID_FORMAT_PATTERN  = '|^(## NextID=)([0-9]+)$|';
 
   const MARGIN = 20;
@@ -197,7 +197,7 @@ class JobManager
     }
 
     $script = sprintf('%s/%s', dirname(__FILE__), self::SCRIPT);
-    $comm = sprintf('%s "%s" %d "%s" "%s" %s # ID=%d',
+    $comm = sprintf('%s "%s" "%s" %d "%s" %s # ID=%d',
       $script, $job->channel, $job->title, $job->rtime, $job->fname, self::OUTPUT, $job->id);
 
     return sprintf("%s%d %d * * %s %s\n",
