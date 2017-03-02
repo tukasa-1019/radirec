@@ -33,6 +33,8 @@ RADIKO_AUTH1_URL=https://radiko.jp/v2/api/auth1_fms
 RADIKO_AUTH2_URL=https://radiko.jp/v2/api/auth2_fms
 RADIKO_CHANNEL_URL=http://radiko.jp/v2/station/stream/
 
+# Post script
+POST_SCRIPT=post-script
 
 # Check argments
 if [ $# -ne 4 ]; then
@@ -239,5 +241,10 @@ if [ -e ${PODCAST_DST} ]; then
   podcast_src=${PODCAST_DST}/${fname}
   podcast_url=${PODCAST_URL}/${fname}
   /usr/bin/python ${mk_podcast} -t ${title} -d ${stop} -o ${podcast_src}/podcast.xml ${podcast_src} ${podcast_url}
+fi
+
+# Post script
+if [ -e ${POST_SCRIPT} ]; then
+  /bin/bash ${POST_SCRIPT} ${dst} ${title} ${channel}
 fi
 

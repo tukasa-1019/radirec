@@ -1,0 +1,6 @@
+#!/bin/bash
+
+PATH="$1"
+TITLE="$2"
+CHANNEL="$3"
+
