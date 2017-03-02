@@ -106,7 +106,7 @@ def main():
     for f in files:
         path      = os.path.join(data_path, f)
         name, ext = os.path.splitext(f)
-        url       = os.path.join(args.url, "data/" + f)
+        url       = os.path.join(url, "data/" + f)
         # Make item
         items = {
             "title"    : name,
