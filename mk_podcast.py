@@ -106,7 +106,7 @@ def main():
     for f in files:
         path      = os.path.join(data_path, f)
         name, ext = os.path.splitext(f)
-        url       = os.path.join(url, "data/" + f)
+        data_url  = os.path.join(url, "data/" + f)
         # Make item
         items = {
             "title"    : name,
@@ -114,9 +114,9 @@ def main():
             "subtitle" : "",
             "summary"  : "",
             "image"    : "",
-            "url"      : url,
+            "url"      : data_url,
             "length"   : os.path.getsize(path),
-            "guid"     : url,
+            "guid"     : data_url,
             "date"     : datetime.fromtimestamp(os.path.getctime(path)).strftime("%a, %d %b %Y %H:%M:%S +0900"),
             "duration" : "%2d:%02d" % (duration / 60, duration % 60),
         }
