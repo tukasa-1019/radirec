@@ -4,7 +4,7 @@
 MARGIN=20
 
 # Path of output
-DST=/tmp/rtmpdump
+DST=/home/rtmpdump
 
 # Workspace
 WORKSPACE=/tmp/rtmpdump
@@ -234,7 +234,10 @@ if [ -e ${PODCAST_DST} ]; then
     /usr/bin/mkdir -p ${data_dir}
   fi
   /usr/bin/cp -p ${dst} ${data_dir}
-  mk_podcast=`dirname "$0"`/mk_podcast.py
-  /usr/bin/python ${mk_podcast} ${PODCAST_DST}/${fname} ${PODCAST_URL}/${fname} podcast.xml ${title} ${stop}
+  # Make xml
+  mk_podcast=`dirname $0`/mk_podcast.py
+  podcast_src=${PODCAST_DST}/${fname}
+  podcast_url=${PODCAST_URL}/${fname}
+  /usr/bin/python ${mk_podcast} -t ${title} -d ${stop} -o ${podcast_src}/podcast.xml ${podcast_src} ${podcast_url}
 fi
 

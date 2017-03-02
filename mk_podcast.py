@@ -6,7 +6,10 @@ Making a Podcast.
 https://www.apple.com/jp/itunes/podcasts/specs.html
 """
 
-import os, string, sys
+import argparse
+import os
+import string
+import sys
 from datetime import datetime
 
 HEADER = """<?xml version="1.0" encoding="UTF-8"?>
@@ -46,102 +49,122 @@ FOOTER = """</channel>
 """
 
 TYPES = {
-         ".mp3" :"audio/mpeg",
-         ".m4a" :"audio/x-m4a",
-         ".mp4" :"video/mp4",
-         ".m4v" :"video/x-m4v",
-         ".mov" :"video/quicktime",
-         ".pdf" :"application/pdf",
-         ".epub":"document/x-epub"
-        }
-
-class Item:
-    pass
+    ".mp3"  : "audio/mpeg",
+    ".m4a"  : "audio/x-m4a",
+    ".mp4"  : "video/mp4",
+    ".m4v"  : "video/x-m4v",
+    ".mov"  : "video/quicktime",
+    ".pdf"  : "application/pdf",
+    ".epub" : "document/x-epub",
+}
 
 def main():
-    #
-    args = sys.argv
-    base_path = args[1]
-    url       = args[2]
-    output    = args[3]
-    title     = args[4]
-    time      = int(args[5])
-    #
-    xml  = ''
-    #
-    item = Item()
-    item.title       = title
-    item.link        = url
-    item.copyright   = ""
-    item.subtitle    = ""
-    item.author      = ""
-    item.summary     = ""
-    item.description = ""
-    item.name        = ""
-    item.email       = ""
-    item.image       = os.path.join(url, "image.png")
-    xml += get_header(item)
-    #
-    data_path = os.path.join(base_path, "data/")
-    #
+    # Parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('src')
+    parser.add_argument('url')
+    parser.add_argument('-t', '--title')
+    parser.add_argument('-d', '--duration')
+    parser.add_argument('-o', '--output')
+    args = parser.parse_args()
+
+    src = args.src
+    url = args.url
+
+    title = ""
+    if args.title != None:
+        title = args.title
+
+    duration = 0
+    if args.duration != None:
+        duration = int(args.duration)
+
+    output = args.output
+
+    # Get header
+    xml = get_header({
+        "title"       : title,
+        "link"        : url,
+        "copyright"   : "",
+        "subtitle"    : "",
+        "author"      : "",
+        "summary"     : "",
+        "description" : "",
+        "name"        : "",
+        "email"       : "",
+        "image"       : os.path.join(url, "image.png"),
+    })
+
+    # Get data folder path
+    data_path = os.path.join(src, "data/")
+
+    # Rotate data files
     rotate(data_path)
-    #
+
     files = os.listdir(data_path)
     files.sort(reverse=True)
-    for file in files:
-        path      = os.path.join(data_path, file)
-        name, ext = os.path.splitext(file)
-        #
-        item = Item()
-        item.title    = name
-        item.author   = ""
-        item.subtitle = ""
-        item.summary  = ""
-        item.image    = ""
-        item.url      = os.path.join(url, "data/" + file)
-        item.length   = os.path.getsize(path)
+    for f in files:
+        path      = os.path.join(data_path, f)
+        name, ext = os.path.splitext(f)
+        url       = os.path.join(args.url, "data/" + f)
+        # Make item
+        items = {
+            "title"    : name,
+            "author"   : "",
+            "subtitle" : "",
+            "summary"  : "",
+            "image"    : "",
+            "url"      : url,
+            "length"   : os.path.getsize(path),
+            "guid"     : url,
+            "date"     : datetime.fromtimestamp(os.path.getctime(path)).strftime("%a, %d %b %Y %H:%M:%S +0900"),
+            "duration" : "%2d:%02d" % (duration / 60, duration % 60),
+        }
         if TYPES.has_key(ext):
-            item.type = TYPES[ext]
+            items["type"] = TYPES[ext]
         else:
             continue
-        item.guid     = item.url
-        item.date     = datetime.fromtimestamp(os.path.getctime(path)).strftime("%a, %d %b %Y %H:%M:%S +0900")
-        item.duration = "%2d:%2d" % (time / 60, time % 60)
-        xml += get_item(item)
-    #
-    xml += get_footer()
-    #
-    out = open(os.path.join(base_path, output), "w")
-    out.write(xml)
-    out.close()
+        xml += get_item(items)
 
-def get_header(item):
+    # Get footer
+    xml += get_footer()
+
+    # Output
+    if output != None:
+        # xml
+        with open(output, "w") as f:
+            f.write(xml)
+    else:
+        # std
+        print xml
+
+def get_header(items):
     return string.Template(HEADER).safe_substitute(
-        title       = item.title,
-        link        = item.link,
-        copyright   = item.copyright,
-        subtitle    = item.subtitle,
-        author      = item.author,
-        summary     = item.summary,
-        description = item.description,
-        name        = item.name,
-        email       = item.email,
-        image       = item.image,
+        title       = items["title"],
+        link        = items["link"],
+        copyright   = items["copyright"],
+        subtitle    = items["subtitle"],
+        author      = items["author"],
+        summary     = items["summary"],
+        description = items["description"],
+        name        = items["name"],
+        email       = items["email"],
+        image       = items["image"],
     )
 
-def get_item(item):
+def get_item(items):
     return string.Template(ITEM).safe_substitute(
-        title    = item.title,
-        author   = item.author,
-        subtitle = item.subtitle,
-        summary  = item.summary,
-        image    = item.image,
-        url      = item.url,
-        length   = item.length,
-        type     = item.type,
-        guid     = item.guid,
-        date     = item.date,
-        duration = item.duration,
+        title    = items["title"],
+        author   = items["author"],
+        subtitle = items["subtitle"],
+        summary  = items["summary"],
+        image    = items["image"],
+        url      = items["url"],
+        length   = items["length"],
+        type     = items["type"],
+        guid     = items["guid"],
+        date     = items["date"],
+        duration = items["duration"],
     )
 
 def get_footer():
@@ -150,11 +173,9 @@ def get_footer():
 def rotate(path):
     files = os.listdir(path)
     files.sort(reverse=True)
-    for file in files[10:]:
-        os.remove(os.path.join(path, file))
-    pass
+    for f in files[10:]:
+        os.remove(os.path.join(path, f))
 
 if __name__ == "__main__":
     main()
-    pass
 
