@@ -198,7 +198,7 @@ else
                    --live
                    --stop ${stop}
                    --flv ${flv}"
-  echo ${rtmpdump_params}
+  #echo ${rtmpdump_params}
 fi
 
 # Sleep
@@ -225,7 +225,7 @@ if [ ${ext} = "mp4" ]; then
 else
   ffmpeg_opt="-vn -acodec copy"
 fi
-${FFMPEG} -y -i ${flv} ${ffmpeg_opt} ${dst}
+${FFMPEG} -y -i ${flv} -v warning ${ffmpeg_opt} ${dst}
 
 # Podcast
 if [ -e ${PODCAST_DST} ]; then
