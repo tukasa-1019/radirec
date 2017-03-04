@@ -33,9 +33,6 @@ RADIKO_AUTH1_URL=https://radiko.jp/v2/api/auth1_fms
 RADIKO_AUTH2_URL=https://radiko.jp/v2/api/auth2_fms
 RADIKO_CHANNEL_URL=http://radiko.jp/v2/station/stream/
 
-# Post script
-POST_SCRIPT=post-script
-
 # Check argments
 if [ $# -ne 4 ]; then
   cat <<EOT
@@ -244,7 +241,8 @@ if [ -e ${PODCAST_DST} ]; then
 fi
 
 # Post script
-if [ -e ${POST_SCRIPT} ]; then
-  /bin/bash ${POST_SCRIPT} ${dst} ${title} ${channel}
+post_script=`dirname $0`/post-script
+if [ -e ${post_script} ]; then
+  /bin/bash ${post_script} ${dst} ${title} ${channel}
 fi
 
