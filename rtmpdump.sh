@@ -101,17 +101,14 @@ flv=${WORKSPACE}/${file_name}.flv
 
 if [ ${channel} = "AGQR" -o ${channel} = "AGQRA" ]; then
   # Set rtmpdump parameters
-  rtmpdump_params="--rtmp ${AANDG_URL}
-                   --live
-                   --stop=${stop}
-                   --flv ${flv}"
+  rtmpdump_params="--rtmp ${AANDG_URL}"
 else
   # Get player if need
   radiko_player=${WORKSPACE}/player.swf
   if [ ! -f ${radiko_player} ]; then
     /usr/bin/wget -q -O ${radiko_player} ${RADIKO_PLAYER_URL}
     if [ $? -ne 0 ]; then
-      echo "Fail to get Radiko player"
+      echo "Fail to get Radiko player" 1>&2
       exit 1
     fi
   fi
@@ -121,7 +118,7 @@ else
   if [ ! -f ${radiko_authkey} ]; then
     ${SWFEXTRACT} -b 12 ${radiko_player} -o ${radiko_authkey}
     if [ $? -ne 0 ]; then
-      echo "Fail to get Radiko authkey"
+      echo "Fail to get Radiko authkey" 1>&2
       exit 1
     fi
   fi
@@ -140,7 +137,7 @@ else
                 -O ${radiko_auth1} \
                 ${RADIKO_AUTH1_URL}
   if [ $? -ne 0 ]; then
-    echo "Fail to get Radiko auth1"
+    echo "Fail to get Radiko auth1" 1>&2
     exit 1
   fi
 
@@ -168,7 +165,7 @@ else
                 -O ${radiko_auth2} \
                 ${RADIKO_AUTH2_URL}
   if [ ! -f ${radiko_auth2} ]; then
-    echo "Fail to get Radiko auth2"
+    echo "Fail to get Radiko auth2" 1>&2
     exit 1
   fi
 
@@ -193,18 +190,14 @@ else
                    --app ${url_parts[1]}
                    --playpath ${url_parts[2]}
                    --swfVfy ${RADIKO_PLAYER_URL}
-                   --conn S:\"\" --conn S:\"\" --conn S:\"\" --conn S:${auth_token}
-                   --live
-                   --stop ${stop}
-                   --flv ${flv}"
-  #echo ${rtmpdump_params}
+                   --conn S:\"\" --conn S:\"\" --conn S:\"\" --conn S:${auth_token}"
 fi
 
 # Sleep
 /usr/bin/sleep `expr \( 60 - ${MARGIN} % 60 \) % 60`
 
 # Recording
-${RTMPDUMP} ${rtmpdump_params}
+${RTMPDUMP} ${rtmpdump_params} --live --stop ${stop} --flv ${flv} --quiet
 
 # Set extension
 if [ ${channel} = "AGQR" ]; then
@@ -224,7 +217,7 @@ if [ ${ext} = "mp4" ]; then
 else
   ffmpeg_opt="-vn -acodec copy"
 fi
-${FFMPEG} -y -i ${flv} -v warning ${ffmpeg_opt} ${dst}
+${FFMPEG} -i ${flv} ${ffmpeg_opt} -y ${dst}
 
 # Podcast
 if [ -e ${PODCAST_DST} ]; then

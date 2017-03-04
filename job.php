@@ -31,12 +31,11 @@ class JobManager
   const CRONTAB_PATH = '/usr/bin/crontab';
 
   const CRON_FORMAT_PATTEN = '|^(#?)([0-9\*\/\*]+) ([0-9\*\/\*]+) \* \* ([0-9,\-]+) (.+) # ID=([0-9]+)$|';
-  const COMM_FORMAT_PATTEN = '|^(.+) "(.+)" "(.+)" ([0-9]+) "(.+)" (.*)$|';
+  const COMM_FORMAT_PATTEN = '|^(.+) "(.+)" "(.+)" ([0-9]+) "(.+)"$|';
   const ID_FORMAT_PATTERN  = '|^(## NextID=)([0-9]+)$|';
 
   const MARGIN = 20;
   const SCRIPT = 'rtmpdump.sh';
-  const OUTPUT = '1>/dev/null';
 
   const CHANNELS = [
     // A&G
@@ -197,8 +196,8 @@ class JobManager
     }
 
     $script = sprintf('%s/%s', dirname(__FILE__), self::SCRIPT);
-    $comm = sprintf('%s "%s" "%s" %d "%s" %s # ID=%d',
-      $script, $job->channel, $job->title, $job->rtime, $job->fname, self::OUTPUT, $job->id);
+    $comm = sprintf('%s "%s" "%s" %d "%s" # ID=%d',
+      $script, $job->channel, $job->title, $job->rtime, $job->fname, $job->id);
 
     return sprintf("%s%d %d * * %s %s\n",
       $job->enable ? '' : '#', $minute, $hour, $week, $comm);
@@ -233,7 +232,6 @@ class JobManager
           $title   = $matches[3];
           $rtime   = $matches[4];
           $fname   = $matches[5];
-          /* $output = $matches[6]; */
 
           // Append
           $this->jlist[] = new Job($id, $channel, $minute, $hour, $week, $rtime, $title, $fname, $enable);
