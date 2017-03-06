@@ -91,6 +91,8 @@ RADIKO_CHANNEL_URL=http://radiko.jp/v2/station/stream/
 # chmod +x post-script
 ```
 
+----------------------------------------------------------------------------------------------------
+
 #### 参考
 
 ##### CentOS 7 で ffmpeg, rtmpdump, swftools, php の導入手順
