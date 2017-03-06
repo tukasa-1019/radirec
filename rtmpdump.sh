@@ -236,6 +236,6 @@ fi
 # Post script
 post_script=`dirname $0`/post-script
 if [ -e ${post_script} ]; then
-  /bin/bash ${post_script} ${dst} ${title} ${channel}
+  source ${post_script} ${dst} ${title} ${channel}
 fi
 
