@@ -60,6 +60,12 @@ class JobManager
   private $jlist;
 
   public function __construct() {
+    // Make job file
+    if (!file_exists(self::JOB_FILE_PATH)) {
+      $fp = fopen(self::JOB_FILE_PATH, 'w');
+      fwrite($fp, '## NextID=1');
+      fclose($fp);
+    }
     $this->reload();
   }
 
