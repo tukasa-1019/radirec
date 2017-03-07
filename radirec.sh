@@ -4,10 +4,10 @@
 MARGIN=20
 
 # Path of output
-DST=/home/rtmpdump
+DST=/home/radirec
 
 # Workspace
-WORKSPACE=/tmp/rtmpdump
+WORKSPACE=/tmp/radirec
 
 # Path of ffmpeg
 FFMPEG=/usr/bin/ffmpeg
@@ -217,7 +217,7 @@ if [ ${ext} = "mp4" ]; then
 else
   ffmpeg_opt="-vn -acodec copy"
 fi
-${FFMPEG} -i ${flv} ${ffmpeg_opt} -y ${dst}
+${FFMPEG} -i ${flv} ${ffmpeg_opt} -loglevel error -y ${dst}
 
 # Podcast
 if [ -e ${PODCAST_DST} ]; then
