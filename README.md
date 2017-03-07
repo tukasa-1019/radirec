@@ -1,4 +1,4 @@
-# rtmpdump
+# RadiRec
 
 - 超！A&G+ と Radiko を録音するための環境、Webインタフェース
 
@@ -30,14 +30,14 @@
 - 任意のディレクトリで
 
 ```
-# git clone https://github.com/tukasa-1019/rtmpdump
+# git clone https://github.com/tukasa-1019/radirec
 ```
 
 - ブラウザからアクセス出来る場所に配備
 
 ### 設定
 
-- rtmpdump.sh を適宜調整
+- radirec.sh を適宜調整
 
 ```
 # 開始時間の何秒前から録音を開始するか

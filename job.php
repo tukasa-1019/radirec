@@ -35,7 +35,7 @@ class JobManager
   const ID_FORMAT_PATTERN  = '|^(## NextID=)([0-9]+)$|';
 
   const MARGIN = 20;
-  const SCRIPT = 'rtmpdump.sh';
+  const SCRIPT = 'radirec.sh';
 
   const CHANNELS = [
     // A&G
