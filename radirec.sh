@@ -25,7 +25,7 @@ PODCAST_DST=
 PODCAST_URL=https://sample.com/podcast
 
 # URL of A&G
-AANDG_URL=rtmp://fms-base1.mitene.ad.jp/agqr/aandg2
+AANDG_URL=rtmp://fms-base1.mitene.ad.jp/agqr/aandg22
 
 # URLs of Radiko
 RADIKO_PLAYER_URL=http://radiko.jp/apps/js/flash/myplayer-release.swf
